@@ -16,7 +16,7 @@ using System.Windows.Forms;
 
 namespace MyGame
 {
-    class Game
+    class Game//Не совсем понял, что нужно сделать в 3м задании, поэтому оставил имя класса неизмененным.
     {
         static System.Drawing.BufferedGraphicsContext context;
         static public BufferedGraphics buffer;
@@ -67,7 +67,7 @@ namespace MyGame
 
         static public void Load()
         {
-            Random r = new Random();
+            Random r = new Random(); //Добавил рандомности первоначальным объектам.
             objs = new BaseObject[30];
             for (int i = 0; i < objs.Length; i += 3)
             {

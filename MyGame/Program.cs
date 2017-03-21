@@ -1,4 +1,16 @@
-﻿using System;
+﻿
+/*
+Голиков Антон павлович
+
+ДЗ 1го урока
+
+1. Добавить свои объекты в иерархию объектов, чтобы получился красивый задний фон, похожий
+на полёт в звёздном пространстве.
+2. *Заменить кружочки картинками, используя метод DrawImage.
+3. **Разработать собственный класс Screensaver, аналогичный классу Game.
+
+*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +26,7 @@ namespace MyGame
         [STAThread]
         static void Main()
         {
+            
             Form form = new Form();
             form.Width = 800;
             form.Height = 600;
