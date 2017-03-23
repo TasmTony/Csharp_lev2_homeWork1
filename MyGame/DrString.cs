@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace MyGame
 {
+    /// <summary>
+    /// Класс описывающий прорисовку и поведение звездочек из символа *
+    /// </summary>
     class DrString: BaseObject
     {
         public DrString(Point pos, Point dir) : base(pos, dir)

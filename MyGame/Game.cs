@@ -38,8 +38,9 @@ namespace MyGame
         }
         static public void Init(Form form)
         {
-            if (form.Width >= 1000 || form.Width <= 0 || form.Height <= 0 || form.Height >= 1000)
-                throw new ArgumentOutOfRangeException("Не верный размер игрового поля");
+            //Проверим размеры формы 
+            if (form.Width > 1000 || form.Width <= 0 || form.Height <= 0 || form.Height > 1000) 
+                throw new ArgumentOutOfRangeException("Не верный размер игрового поля"); //Если размеры не верны, сгенерируем ошибку
             // Графическое устройство для вывода графики
             Graphics g;
             // предоставляет доступ к главному буферу графического контекста для текущего приложения
@@ -53,7 +54,7 @@ namespace MyGame
             buffer = context.Allocate(g, new Rectangle(0, 0, Width, Height));
 
             Load();
-            form.FormClosed += Form_Closed;
+            form.FormClosed += Form_Closed; 
             Timer timer = new Timer();
             timer.Interval = 100;
             timer.Start();
@@ -65,10 +66,10 @@ namespace MyGame
             Draw();
             Update();
         }
-        private static void Form_Closed(object sender, EventArgs e)
+        private static void Form_Closed(object sender, EventArgs e) //Обработка закрытия формы
         {
             
-            Form f = Application.OpenForms[0];
+            Form f = Application.OpenForms[0]; //переходим к основной форме и закрываем ее
             f.Close();
         }
         static public void Draw()
@@ -90,14 +91,14 @@ namespace MyGame
             objs = new BaseObject[30];
             bullet = new Bullet(new Point(0, r.Next(1, Height)), new Point(5, 0), new Size(4, 1));
             asteroids = new Asteroid[4];
-            for (int i = 0; i < objs.Length; i += 2)
+            for (int i = 0; i < objs.Length; i += 2) //Заполняем массив звездами с учетом размеров формы
             {                
                 int j = r.Next(1, 30);
                 objs[i] = new Star(new Point(r.Next(1, Width), i * Height/30), new Point(-j, 0), new Size(3, 3));
                 j = r.Next(1, 30);
                 objs[i + 1] = new DrString(new Point(r.Next(1,Width), (i + 1) * Height / 30), new Point(-j ,-j ));
             }
-            for (int i = 0; i<asteroids.Length;i++)
+            for (int i = 0; i<asteroids.Length;i++)  //Заполняем массив астероидов с учетом размеров формы
             {
                 int j = r.Next(1, 15);
                 asteroids[i] = new Asteroid(new Point(r.Next(0, Width), i * 20), new Point(-j, -j), new Size(20, 20));
@@ -110,16 +111,16 @@ namespace MyGame
             foreach (BaseObject obj in objs)
                 obj.Update();
             int i = 0;
-            foreach (Asteroid obj in asteroids)
+            foreach (Asteroid obj in asteroids) //Пробегаем по астероидам и проверяем их на столкновение со снарядом
             {
                 obj.Update();
                 if (obj.Collision(bullet))
                 {
                     Random r = new Random();
-                    System.Media.SystemSounds.Hand.Play();
+                    System.Media.SystemSounds.Hand.Play(); //Воспроизводим звук при столкновении
                     int j = r.Next(1, 30);
-                    asteroids[i]=new Asteroid(new Point(r.Next(0, Width), r.Next(1,Height)), new Point(-j, -j), new Size(20, 20));
-                    bullet = new Bullet(new Point(0, r.Next(1,Width)), new Point(5, 0), new Size(4, 1));
+                    asteroids[i]=new Asteroid(new Point(r.Next(0, Width), r.Next(1,Height)), new Point(-j, -j), new Size(20, 20)); //генерируем новый астероид
+                    bullet = new Bullet(new Point(0, r.Next(1,Width)), new Point(5, 0), new Size(4, 1)); //генерируем новый снаряд
                 }
                 i++;
                     

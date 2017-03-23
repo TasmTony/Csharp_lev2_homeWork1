@@ -17,9 +17,6 @@ ArgumentOutOfRangeException().
 
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MyGame
@@ -32,7 +29,7 @@ namespace MyGame
         [STAThread]
         static void Main()
         {
-            StartForm startForm = new StartForm();            
+            StartForm startForm = new StartForm();     //Выводим форму запроса размеров       
             Application.Run(startForm);
         }
     }

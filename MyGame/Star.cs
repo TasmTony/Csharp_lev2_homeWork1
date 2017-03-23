@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace MyGame
 {
+    /// <summary>
+    /// Класс описывающий прорисовку и поведение Х образных звезд
+    /// </summary>
     class Star: BaseObject
     {
         public Star(Point pos, Point dir, Size size) : base(pos, dir, size)

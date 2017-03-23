@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace MyGame
 {
+    /// <summary>
+    /// Класс описывающий прорисовку и поведение астероидов
+    /// </summary>
     class Asteroid:BaseObject
     {
-        public int Power { get; set; }
+      
         public Asteroid(Point pos, Point dir, Size size): base(pos,dir,size)
         {
-            Power = 1;
+            
         }
         public override void Draw()
         {
-            Game.buffer.Graphics.DrawImage(Properties.Resources.astr1, pos.X, pos.Y, size.Width, size.Height);
+            Game.buffer.Graphics.DrawImage(Properties.Resources.astr1, pos.X, pos.Y, size.Width, size.Height); //Астероид будет картинкой занесенной в ресурсы
         }
         public override void Update()
         {
