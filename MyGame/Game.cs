@@ -80,7 +80,7 @@ namespace MyGame
         {
             Random r = new Random(); //Добавил рандомности первоначальным объектам.
             objs = new BaseObject[30];
-            bullet = new Bullet(new Point(0, 200), new Point(5, 0), new Size(4, 1));
+            bullet = new Bullet(new Point(0, r.Next(1,400)), new Point(5, 0), new Size(4, 1));
             asteroids = new Asteroid[4];
             for (int i = 0; i < objs.Length; i += 2)
             {                
@@ -101,11 +101,20 @@ namespace MyGame
             
             foreach (BaseObject obj in objs)
                 obj.Update();
+            int i = 0;
             foreach (Asteroid obj in asteroids)
             {
                 obj.Update();
                 if (obj.Collision(bullet))
+                {
+                    Random r = new Random();
                     System.Media.SystemSounds.Hand.Play();
+                    int j = r.Next(1, 30);
+                    asteroids[i]=new Asteroid(new Point(r.Next(0, 600), r.Next(1,600)), new Point(-j, -j), new Size(20, 20));
+                    bullet = new Bullet(new Point(0, r.Next(1,400)), new Point(5, 0), new Size(4, 1));
+                }
+                i++;
+                    
             }
             bullet.Update();
         }
