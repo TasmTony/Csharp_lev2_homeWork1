@@ -27,6 +27,8 @@ namespace MyGame
         static System.Drawing.BufferedGraphicsContext context;
         static public BufferedGraphics buffer;
         static BaseObject[] objs;
+        static Bullet bullet;
+        static Asteroid[] asteroids;
         // Свойства
         // Ширина и высота игрового поля
         static public int Width { get; set; }
@@ -75,14 +77,19 @@ namespace MyGame
         {
             Random r = new Random(); //Добавил рандомности первоначальным объектам.
             objs = new BaseObject[30];
-            for (int i = 0; i < objs.Length; i += 3)
-            {
-                int j = r.Next(1, 15);
-                objs[i] = new Asteroid(new Point(r.Next(0,600), i * 20), new Point(-j, -j), new Size(20, 20));
-                j = r.Next(1, 30);
-                objs[i+1] = new Star(new Point(r.Next(300, 600), (i+1) * 20), new Point(-j, 0), new Size(5, 5));
+            bullet = new Bullet(new Point(0, 200), new Point(5, 0), new Size(4, 1));
+            asteroids = new Asteroid[4];
+            for (int i = 0; i < objs.Length; i += 2)
+            {                
+                int j = r.Next(1, 30);
+                objs[i+1] = new Star(new Point(r.Next(300, 600), (i+1) * 20), new Point(-j, 0), new Size(3, 3));
                 j = r.Next(1, 30);
                 objs[i + 2] = new DrString(new Point(r.Next(1,300), (i + 2) * 20), new Point(-j ,-j ));
+            }
+            for (int i = 0; i<asteroids.Length;i++)
+            {
+                int j = r.Next(1, 15);
+                asteroids[i] = new Asteroid(new Point(r.Next(0, 600), i * 20), new Point(-j, -j), new Size(20, 20));
             }
                 
         }
