@@ -21,11 +21,11 @@ namespace MyGame
         public override void Update()
         {
             pos.X = pos.X + dir.X;
-            //pos.Y = pos.Y + dir.Y;
-            if (pos.X < 0) pos.X = Game.Width + size.Width;
-            //if (pos.X > Game.Width) dir.X = -dir.X;
-            //if (pos.Y < 0) dir.Y = -dir.Y;
-            //if (pos.Y > Game.Height) dir.Y = -dir.Y;
+            pos.Y = pos.Y + dir.Y;
+            if (pos.X < 0) pos.X = dir.X = -dir.X;
+            if (pos.X > Game.Width) dir.X = -dir.X;
+            if (pos.Y < 0) dir.Y = -dir.Y;
+            if (pos.Y > Game.Height) dir.Y = -dir.Y;
         }
     }
 }
