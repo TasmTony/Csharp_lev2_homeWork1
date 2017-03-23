@@ -66,7 +66,10 @@ namespace MyGame
         static public void Draw()
         {
             buffer.Graphics.Clear(Color.Black);
+            bullet.Draw();
             foreach (BaseObject obj in objs)
+                obj.Draw();
+            foreach (Asteroid obj in asteroids)
                 obj.Draw();
             buffer.Render();
 
@@ -82,9 +85,9 @@ namespace MyGame
             for (int i = 0; i < objs.Length; i += 2)
             {                
                 int j = r.Next(1, 30);
-                objs[i+1] = new Star(new Point(r.Next(300, 600), (i+1) * 20), new Point(-j, 0), new Size(3, 3));
+                objs[i] = new Star(new Point(r.Next(300, 600), i * 20), new Point(-j, 0), new Size(3, 3));
                 j = r.Next(1, 30);
-                objs[i + 2] = new DrString(new Point(r.Next(1,300), (i + 2) * 20), new Point(-j ,-j ));
+                objs[i + 1] = new DrString(new Point(r.Next(1,300), (i + 1) * 20), new Point(-j ,-j ));
             }
             for (int i = 0; i<asteroids.Length;i++)
             {
@@ -95,8 +98,16 @@ namespace MyGame
         }
         static public void Update()
         {
+            
             foreach (BaseObject obj in objs)
                 obj.Update();
+            foreach (Asteroid obj in asteroids)
+            {
+                obj.Update();
+                if (obj.Collision(bullet))
+                    System.Media.SystemSounds.Hand.Play();
+            }
+            bullet.Update();
         }
 
     }
