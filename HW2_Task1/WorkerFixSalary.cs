@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace HW2_Task1
 {
+    /// <summary>
+    /// Класс сотрудников с фиксированной з\п
+    /// </summary>
     class WorkerFixSalary:WorkerBase
     {
 

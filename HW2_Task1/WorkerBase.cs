@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections;
+
 
 namespace HW2_Task1
 {
-    abstract class WorkerBase
+    /// <summary>
+    /// Базовый абстрактный класс работников
+    /// </summary>
+    abstract class WorkerBase:IComparable,IEnumerable
     {
-        public string Fname
+        public string Fname 
         {
             get; set;
         }
@@ -28,10 +29,27 @@ namespace HW2_Task1
             Salary = _salary;
         }
 
-        abstract public double AverSalary();
+        abstract public double AverSalary();// абстр. метод расчета среднемесячной з\п
+
+        //реализация интерфейса сравнения объектов (по зарплате)
+        public int CompareTo(object obj)
+        {
+            if (Salary > (obj as WorkerBase).Salary) return 1;
+            else if (Salary == (obj as WorkerBase).Salary) return 0;
+            else return -1;
+        }
         public override string ToString()
         {
             return $" " + Fname + " " + Lname + " " + Salary+" RUR";
         }
+        //реализация интерфейса перечеслителя для вывода полей через Форейч
+        public virtual IEnumerator GetEnumerator()
+        {
+            yield return Fname;
+            yield return Lname;
+            yield return Salary;
+        }
+
+   
     }
 }
