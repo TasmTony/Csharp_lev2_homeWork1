@@ -21,6 +21,8 @@ namespace MyGame
         protected Size size;
         public BaseObject(Point pos, Point dir, Size size)
         {
+            if (pos.X < 0 || pos.Y < 0)
+                throw new GameObjectException("Неверные координаты"); //При отрицательных координатай вылетит исключение.
             this.pos = pos;
             this.dir = dir;
             this.size = size;
@@ -30,12 +32,10 @@ namespace MyGame
             this.pos = pos;
             this.dir = dir;            
         }
+
         abstract public void Draw();
-        abstract public void Update();
-
-        
-
-        
+        abstract public void Update();            
+                
         public bool Collision(ICollision o)//метод определения столкновения объектов
         {
             return o.Rect.IntersectsWith(this.Rect);

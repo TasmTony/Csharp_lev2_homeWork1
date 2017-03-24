@@ -12,7 +12,8 @@
 ArgumentOutOfRangeException().
 5. *Создать собственное исключение GameObjectException, которое появляется при попытке
 создать объект с неправильными характеристиками (например, отрицательные размеры,
-слишком большая скорость или позиция).
+слишком большая скорость или позиция).
+
 
 */
 using System;
@@ -29,6 +30,7 @@ namespace MyGame
         static BaseObject[] objs;
         static Bullet bullet;
         static Asteroid[] asteroids;
+        static private Timer timer;
         // Свойства
         // Ширина и высота игрового поля
         static public int Width { get; set; }
@@ -54,8 +56,8 @@ namespace MyGame
             buffer = context.Allocate(g, new Rectangle(0, 0, Width, Height));
 
             Load();
-            form.FormClosed += Form_Closed; 
-            Timer timer = new Timer();
+            form.FormClosed += Form_Closed;
+            timer = new Timer();
             timer.Interval = 100;
             timer.Start();
             timer.Tick += Timer_Tick;
@@ -89,22 +91,24 @@ namespace MyGame
         {
             Random r = new Random(); //Добавил рандомности первоначальным объектам.
             objs = new BaseObject[30];
+           
             bullet = new Bullet(new Point(0, r.Next(1, Height)), new Point(5, 0), new Size(4, 1));
             asteroids = new Asteroid[4];
             for (int i = 0; i < objs.Length; i += 2) //Заполняем массив звездами с учетом размеров формы
-            {                
+            {
                 int j = r.Next(1, 30);
-                objs[i] = new Star(new Point(r.Next(1, Width), i * Height/30), new Point(-j, 0), new Size(3, 3));
+                objs[i] = new Star(new Point(r.Next(1, Width), i * Height / 30), new Point(-j, 0), new Size(3, 3));
                 j = r.Next(1, 30);
-                objs[i + 1] = new DrString(new Point(r.Next(1,Width), (i + 1) * Height / 30), new Point(-j ,-j ));
+                objs[i + 1] = new DrString(new Point(r.Next(1, Width), (i + 1) * Height / 30), new Point(-j, -j));
             }
-            for (int i = 0; i<asteroids.Length;i++)  //Заполняем массив астероидов с учетом размеров формы
+            for (int i = 0; i < asteroids.Length; i++)  //Заполняем массив астероидов с учетом размеров формы
             {
                 int j = r.Next(1, 15);
                 asteroids[i] = new Asteroid(new Point(r.Next(0, Width), i * 20), new Point(-j, -j), new Size(20, 20));
             }
-                
         }
+                      
+ 
         static public void Update()
         {
             
@@ -125,7 +129,18 @@ namespace MyGame
                 i++;
                     
             }
-            bullet.Update();
+            try
+            {
+                bullet.Update();
+            }
+            catch(GameObjectException ex) //Если снаряд улетит за пределы поля, сгенерируется исключение
+            {
+                timer.Stop(); //Остановим таймер
+                MessageBox.Show(ex.Message,"Pause!!!"); //Выдадим сообщение об исключении
+                Random r = new Random();
+                bullet = new Bullet(new Point(0, r.Next(1, Width)), new Point(5, 0), new Size(4, 1)); //генерируем новый снаряд
+                timer.Start(); //Продолжаем игру
+            } 
         }
 
     }
