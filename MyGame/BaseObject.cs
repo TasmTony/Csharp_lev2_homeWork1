@@ -27,12 +27,15 @@ namespace MyGame
             this.dir = dir;
             this.size = size;
         }
-        public BaseObject(Point pos, Point dir) 
+        public BaseObject(Point pos, Point dir) //конструктор для текстовых значков
         {
             this.pos = pos;
             this.dir = dir;            
         }
-
+        public BaseObject(Point pos)//конструктор для статичных надписей
+        {
+            this.pos = pos;            
+        }
         abstract public void Draw();
         abstract public void Update();            
                 

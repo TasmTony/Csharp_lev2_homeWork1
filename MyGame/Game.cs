@@ -31,10 +31,12 @@ namespace MyGame
         static Bullet bullet;
         static Asteroid[] asteroids;
         static private Timer timer;
+        static Score score;
         // Свойства
         // Ширина и высота игрового поля
         static public int Width { get; set; }
         static public int Height { get; set; }
+        static public int ScoreGame { get; set; }
         static Game()
         {
         }
@@ -51,6 +53,7 @@ namespace MyGame
                                       // Запоминаем размеры формы
             Width = form.Width;
             Height = form.Height;
+            ScoreGame = 0; //Счетчик очков в 0
             // Связываем буфер в памяти с графическим объектом.
             // для того, чтобы рисовать в буфере
             buffer = context.Allocate(g, new Rectangle(0, 0, Width, Height));
@@ -82,6 +85,7 @@ namespace MyGame
                 obj.Draw();
             foreach (Asteroid obj in asteroids)
                 obj.Draw();
+            score.Draw();
             buffer.Render();
 
 
@@ -91,7 +95,8 @@ namespace MyGame
         {
             Random r = new Random(); //Добавил рандомности первоначальным объектам.
             objs = new BaseObject[30];
-           
+
+            score = new Score(new Point(3, 3)); //инициализируем счетчик очков 
             bullet = new Bullet(new Point(0, r.Next(1, Height)), new Point(5, 0), new Size(4, 1));
             asteroids = new Asteroid[4];
             for (int i = 0; i < objs.Length; i += 2) //Заполняем массив звездами с учетом размеров формы
@@ -120,6 +125,7 @@ namespace MyGame
                 obj.Update();
                 if (obj.Collision(bullet))
                 {
+                    ScoreGame++; //увеличим счетчик очков
                     Random r = new Random();
                     System.Media.SystemSounds.Hand.Play(); //Воспроизводим звук при столкновении
                     int j = r.Next(1, 30);
