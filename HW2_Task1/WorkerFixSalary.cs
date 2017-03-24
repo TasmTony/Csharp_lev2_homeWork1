@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HW2_Task1
 {
-    abstract class WorkerBase
+    class WorkerFixSalary:WorkerBase
     {
         private string Fname
         {
@@ -20,18 +20,14 @@ namespace HW2_Task1
         {
             get; set;
         }
-
-        public WorkerBase(string _Fname, string _Lname, double _salary)
+        public WorkerFixSalary(string _Fname, string _Lname, double _salary):base (_Fname,_Lname,_salary)
         {
-            Fname = _Fname;
-            Lname = _Lname;
-            Salary = _salary;
+
         }
 
-        abstract public double AverSalary();
-        public override string ToString()
+        public override double AverSalary()
         {
-            return $" " + Fname + " " + Lname + " " + Salary+" RUR";
+            return Salary;
         }
     }
 }
