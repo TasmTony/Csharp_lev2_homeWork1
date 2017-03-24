@@ -8,15 +8,15 @@ namespace HW2_Task1
 {
     abstract class WorkerBase
     {
-        private string Fname
+        public string Fname
         {
             get; set;
         }
-        private string Lname
+        public string Lname
         {
             get; set;
         }
-        private double Salary
+        public double Salary
         {
             get; set;
         }
