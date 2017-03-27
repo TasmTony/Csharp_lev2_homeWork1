@@ -11,6 +11,8 @@ namespace MyGame
         bool Collision(ICollision obj);
         Rectangle Rect { get; }
     }
+
+    delegate void Message();
     /// <summary>
     /// Абстрактный класс описания всех игровых объектов
     /// </summary>

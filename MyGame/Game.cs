@@ -33,6 +33,7 @@ namespace MyGame
         static private Timer timer;
         static Score score;
         static public Random rnd = new Random();
+        static Ship ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(10, 10));
         // Свойства
         // Ширина и высота игрового поля
         static public int Width { get; set; }
@@ -61,12 +62,22 @@ namespace MyGame
 
             Load();
             form.FormClosed += Form_Closed;
+            form.KeyDown += Form_KeyDown;
             timer = new Timer();
             timer.Interval = 100;
             timer.Start();
             timer.Tick += Timer_Tick;
-            
+            Ship.MessageDie += Finish;
+
         }
+
+        private static void Form_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.ControlKey) bullet = new Bullet(new Point(ship.Rect.X + 10, ship.Rect.Y + 4), new Point(4, 0), new Size(4, 1));
+            if (e.KeyCode == Keys.Up) ship.Up();
+            if (e.KeyCode == Keys.Down) ship.Down();
+        }
+
         private static void Timer_Tick(object sender, EventArgs e)
         {
             Draw();
@@ -80,14 +91,25 @@ namespace MyGame
         }
         static public void Draw()
         {
+            //buffer.Graphics.Clear(Color.Black);
+            //bullet.Draw();
+            //foreach (BaseObject obj in objs)
+            //    obj.Draw();
+            //foreach (Asteroid obj in asteroids)
+            //    obj.Draw();
             buffer.Graphics.Clear(Color.Black);
-            bullet.Draw();
             foreach (BaseObject obj in objs)
                 obj.Draw();
-            foreach (Asteroid obj in asteroids)
-                obj.Draw();
-            score.Draw();
+            foreach (Asteroid a in asteroids)
+                if (a != null) a.Draw();
+            if (bullet != null) bullet.Draw();
+            ship.Draw();
+            buffer.Graphics.DrawString("Energy:" + ship.Energy, SystemFonts.DefaultFont, Brushes.White, 0, 0);
+            buffer.Graphics.DrawString($"Score: " + ScoreGame, SystemFonts.CaptionFont, Brushes.Red, 0, 10);
             buffer.Render();
+            //score.Draw();
+            //buffer.Render();
+            //ship.Draw();
 
 
         }
@@ -120,35 +142,64 @@ namespace MyGame
             
             foreach (BaseObject obj in objs)
                 obj.Update();
-            int i = 0;
-            foreach (Asteroid obj in asteroids) //Пробегаем по астероидам и проверяем их на столкновение со снарядом
+            if (bullet != null) bullet.Update();
+            for (int i = 0; i < asteroids.Length; i++)
             {
-                obj.Update();
-                if (obj.Collision(bullet))
+                if (asteroids[i] != null)
                 {
-                    ScoreGame++; //увеличим счетчик очков
-                    Random r = new Random();
-                    System.Media.SystemSounds.Hand.Play(); //Воспроизводим звук при столкновении
-                    int j = r.Next(1, 30);
-                    asteroids[i]=new Asteroid(new Point(r.Next(0, Width), r.Next(1,Height)), new Point(-j, -j), new Size(20, 20)); //генерируем новый астероид
-                    bullet = new Bullet(new Point(0, r.Next(1,Width)), new Point(5, 0), new Size(4, 1)); //генерируем новый снаряд
+                    asteroids[i].Update();
+                    if (bullet != null && bullet.Collision(asteroids[i]))
+                    {
+                        System.Media.SystemSounds.Hand.Play();
+                        asteroids[i] = null;
+                        ScoreGame++;
+                        bullet = null;
+                        continue;
+                    }
+                    if (ship.Collision(asteroids[i]))
+                    {
+                        ship.EnergyLow(rnd.Next(1, 10));
+                        System.Media.SystemSounds.Asterisk.Play();
+                        if (ship.Energy <= 0) ship.Die();
+                    }
                 }
-                i++;
-                    
             }
-            try
-            {
-                bullet.Update();
-            }
-            catch(GameObjectException ex) //Если снаряд улетит за пределы поля, сгенерируется исключение
-            {
-                timer.Stop(); //Остановим таймер
-                MessageBox.Show(ex.Message,"Pause!!!"); //Выдадим сообщение об исключении
-                Random r = new Random();
-                bullet = new Bullet(new Point(0, r.Next(1, Width)), new Point(5, 0), new Size(4, 1)); //генерируем новый снаряд
-                timer.Start(); //Продолжаем игру
-            } 
-        }
+        
+        //int i = 0;
+        //foreach (Asteroid obj in asteroids) //Пробегаем по астероидам и проверяем их на столкновение со снарядом
+        //{
+        //    obj.Update();
+        //    if (obj.Collision(bullet))
+        //    {
+        //        ScoreGame++; //увеличим счетчик очков
+        //        Random r = new Random();
+        //        System.Media.SystemSounds.Hand.Play(); //Воспроизводим звук при столкновении
+        //        int j = r.Next(1, 30);
+        //        asteroids[i]=new Asteroid(new Point(r.Next(0, Width), r.Next(1,Height)), new Point(-j, -j), new Size(20, 20)); //генерируем новый астероид
+        //        bullet = new Bullet(new Point(0, r.Next(1,Width)), new Point(5, 0), new Size(4, 1)); //генерируем новый снаряд
+        //    }
+        //    i++;
 
+        //}
+        //try
+        //{
+        //    bullet.Update();
+        //}
+        //catch(GameObjectException ex) //Если снаряд улетит за пределы поля, сгенерируется исключение
+        //{
+        //    timer.Stop(); //Остановим таймер
+        //    MessageBox.Show(ex.Message,"Pause!!!"); //Выдадим сообщение об исключении
+        //    Random r = new Random();
+        //    bullet = new Bullet(new Point(0, r.Next(1, Width)), new Point(5, 0), new Size(4, 1)); //генерируем новый снаряд
+        //    timer.Start(); //Продолжаем игру
+        //} 
+        }
+        static public void Finish()
+        {
+            timer.Stop();
+            buffer.Graphics.DrawString("The End", new Font(FontFamily.GenericSansSerif, 60, FontStyle.Underline),
+           Brushes.White, 200, 100);
+            buffer.Render();
+        }
     }
 }
