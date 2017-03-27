@@ -32,6 +32,7 @@ namespace MyGame
         static Asteroid[] asteroids;
         static private Timer timer;
         static Score score;
+        static public Random rnd = new Random();
         // Свойства
         // Ширина и высота игрового поля
         static public int Width { get; set; }
