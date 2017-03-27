@@ -4,6 +4,10 @@ using System.Drawing;
 
 namespace MyGame
 {
+    public interface IComparable<T>
+    {
+        int CompareTo(T obj);
+    }
     /// <summary>
     /// Класс описывающий прорисовку и поведение астероидов
     /// </summary>
