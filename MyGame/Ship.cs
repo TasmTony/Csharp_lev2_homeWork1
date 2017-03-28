@@ -10,6 +10,7 @@ namespace MyGame
     class Ship:BaseObject
     {
         public static event Message MessageDie;
+        public static event LogOut ShipDemag;
 
         int energy = 100;
 
@@ -30,7 +31,7 @@ namespace MyGame
 
         public override void Draw()
         {
-            Game.buffer.Graphics.FillEllipse(Brushes.Wheat, pos.X, pos.Y, size.Width, size.Height);
+           // Game.buffer.Graphics.FillEllipse(Brushes.Wheat, pos.X, pos.Y, size.Width, size.Height);
             Game.buffer.Graphics.DrawImage(Properties.Resources.ship1, pos.X, pos.Y, size.Width, size.Height);
         }
 
@@ -47,9 +48,13 @@ namespace MyGame
         {
             if (pos.Y < Game.Height) pos.Y = pos.Y + dir.Y;
         }
-
+        public void Demag(int dem)
+        {
+            if (ShipDemag != null) ShipDemag($"Урон по кораблю " + dem + "%;");
+        }
         public void Die()
         {
+            if (ShipDemag != null) ShipDemag($"Корабль уничтожен! Game Over!!!");
             if (MessageDie != null) MessageDie();
 
         }

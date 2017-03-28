@@ -13,6 +13,7 @@ namespace MyGame
     }
 
     delegate void Message();
+    delegate void LogOut(string strOut);
     /// <summary>
     /// Абстрактный класс описания всех игровых объектов
     /// </summary>

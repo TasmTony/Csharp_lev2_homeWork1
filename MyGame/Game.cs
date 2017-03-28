@@ -36,6 +36,7 @@ namespace MyGame
         static Score score;
         static public Random rnd = new Random();
         static Ship ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(25, 15));
+        static LogForm log = new LogForm();
         // Свойства
         // Ширина и высота игрового поля
         static public int Width { get; set; }
@@ -46,6 +47,7 @@ namespace MyGame
         }
         static public void Init(Form form)
         {
+
             //Проверим размеры формы 
             if (form.Width > 1000 || form.Width <= 0 || form.Height <= 0 || form.Height > 1000) 
                 throw new ArgumentOutOfRangeException("Не верный размер игрового поля"); //Если размеры не верны, сгенерируем ошибку
@@ -61,7 +63,7 @@ namespace MyGame
             // Связываем буфер в памяти с графическим объектом.
             // для того, чтобы рисовать в буфере
             buffer = context.Allocate(g, new Rectangle(0, 0, Width, Height));
-
+            string s = $"Урон по кораблю %;";
             Load();
             form.FormClosed += Form_Closed;
             form.KeyDown += Form_KeyDown;
@@ -70,6 +72,12 @@ namespace MyGame
             timer.Start();
             timer.Tick += Timer_Tick;
             Ship.MessageDie += Finish;
+            Ship.ShipDemag += LogEvent;
+            Asteroid.AsterDemag += LogEvent;
+            
+            log.Show();
+            log.Location = new Point(form.Location.X + form.Width, form.Location.Y);
+            log.StrLog = "Старт!!!";
 
         }
 
@@ -148,7 +156,11 @@ namespace MyGame
                 asteroids[i] = new Asteroid(new Point(r.Next(0, Width), i * 20), new Point(-j, -j), new Size(20, 20));
             }
         }
-                      
+         
+        static public void LogEvent(string strEvent)
+        {
+            log.StrLog = DateTime.Now.ToShortTimeString() + strEvent;
+        }             
  
         static public void Update()
         {
@@ -164,14 +176,24 @@ namespace MyGame
                     if (bullet != null && bullet.Collision(asteroids[i]))
                     {
                         System.Media.SystemSounds.Hand.Play();
-                        asteroids[i] = null;
-                        ScoreGame++;
+
+                        if (--asteroids[i].Power == 0)
+                        {
+                            asteroids[i].Die();
+                            asteroids[i] = null;
+                            ScoreGame++;
+                        }
+                        else
+                            asteroids[i].Demag(asteroids[i].Power);
+                                                
                         bullet = null;
                         continue;
                     }
                     if (ship.Collision(asteroids[i]))
                     {
-                        ship.EnergyLow(rnd.Next(1, 10));
+                        int d = rnd.Next(1, 10);
+                        ship.EnergyLow(d);
+                        ship.Demag(d);
                         System.Media.SystemSounds.Asterisk.Play();
                         if (ship.Energy <= 0) ship.Die();
                     }
@@ -210,6 +232,7 @@ namespace MyGame
         static public void Finish()
         {
             timer.Stop();
+            log.StrLog = "Конец";    
             buffer.Graphics.DrawString("The End", new Font(FontFamily.GenericSansSerif, 60, FontStyle.Underline),
            Brushes.White, 200, 100);
             buffer.Render();
