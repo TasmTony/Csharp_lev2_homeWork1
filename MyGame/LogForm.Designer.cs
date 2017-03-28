@@ -37,20 +37,22 @@
             this.tbLog.Location = new System.Drawing.Point(0, 0);
             this.tbLog.Multiline = true;
             this.tbLog.Name = "tbLog";
-            this.tbLog.Size = new System.Drawing.Size(220, 246);
+            this.tbLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbLog.Size = new System.Drawing.Size(418, 321);
             this.tbLog.TabIndex = 0;
             // 
             // LogForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(220, 246);
+            this.ClientSize = new System.Drawing.Size(418, 321);
             this.Controls.Add(this.tbLog);
             this.Name = "LogForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Журнал";
             this.ResumeLayout(false);
             this.PerformLayout();
+            this.ControlBox = false;
 
         }
 

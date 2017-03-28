@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 
 namespace MyGame
 {
+    /// <summary>
+    /// Класс описывающий объект - корабль
+    /// </summary>
     class Ship:BaseObject
     {
-        public static event Message MessageDie;
-        public static event LogOut ShipDemagLog;
+        public static event Message MessageDie; //Событие уничтожение корабля
+        public static event LogOut ShipDemagLog;//Событие - повреждение корабля
 
-        int energy = 100;
+        int energy = 100; 
 
         public int Energy
         {
@@ -32,7 +35,7 @@ namespace MyGame
         public override void Draw()
         {
            // Game.buffer.Graphics.FillEllipse(Brushes.Wheat, pos.X, pos.Y, size.Width, size.Height);
-            Game.buffer.Graphics.DrawImage(Properties.Resources.ship1, pos.X, pos.Y, size.Width, size.Height);
+            Game.buffer.Graphics.DrawImage(Properties.Resources.ship1, pos.X, pos.Y, size.Width, size.Height); //С картинкой интересней))
         }
 
         public override void Update()
@@ -48,10 +51,16 @@ namespace MyGame
         {
             if (pos.Y < Game.Height) pos.Y = pos.Y + dir.Y;
         }
-        public void Demag(int dem)
+        /// <summary>
+        /// Метод обработки попадания по кораблю
+        /// </summary>        
+        public void Demag(int dem) 
         {
-            if (ShipDemagLog != null) ShipDemagLog($"Урон по кораблю " + dem + "%;");
+            if (ShipDemagLog != null) ShipDemagLog($"Урон по кораблю {dem}%;");
         }
+        /// <summary>
+        /// Метод обработки уничтожения корабля
+        /// </summary>
         public void Die()
         {
             if (ShipDemagLog != null) ShipDemagLog($"Корабль уничтожен! Game Over!!!");

@@ -10,9 +10,15 @@ using System.Windows.Forms;
 
 namespace MyGame
 {
+    /// <summary>
+    /// Класс описывающий форму Журнала
+    /// </summary>
     public partial class LogForm : Form
     {
-        public string StrLog
+        /// <summary>
+        /// Свойство для записи в журнал
+        /// </summary>
+        public string StrLog 
         {
             set { tbLog.Text += value + Environment.NewLine; }
         }

@@ -1,19 +1,11 @@
 ﻿/*
 Голиков Антон павлович
 
-ДЗ 2го урока
-
-2. Переделать виртуальный метод Update в BaseObject в абстрактный и реализовать его в
-наследниках.
-3. Сделать так, чтобы при столкновениях пули с астероидом пуля и астероид регенерировались в
-разных концах экрана;
-4. Сделать проверку на задание размера экрана в классе Game. Если высота или ширина больше
-1000 или принимает отрицательное значение, то выбросить исключение
-ArgumentOutOfRangeException().
-5. *Создать собственное исключение GameObjectException, которое появляется при попытке
-создать объект с неправильными характеристиками (например, отрицательные размеры,
-слишком большая скорость или позиция).
-
+ДЗ 3го урока
+1. а) Добавить в игру “Астероиды” ведение журнала в консоль
+б)*и в файл.
+2. Добавьте аптечки, которые добавляют энергии.
+3. Добавить подсчет очков за сбитые астероиды.
 
 */
 using System;
@@ -22,9 +14,10 @@ using System.Drawing;
 using System.Windows.Forms;
 
 
+
 namespace MyGame
 {
-    class Game//Не совсем понял, что нужно сделать в 3м задании, поэтому оставил имя класса неизмененным.
+    class Game
     {
         static System.Drawing.BufferedGraphicsContext context;
         static public BufferedGraphics buffer;
@@ -33,7 +26,7 @@ namespace MyGame
         //static List<Bullet> bullets = new List<Bullet>();
         static Asteroid[] asteroids;
         static private Timer timer;
-        static Score score;
+        //static Score score;
         static public Random rnd = new Random();
         static Ship ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(25, 15));
         static LogForm log = new LogForm(); //Создадим форму для ведения журнала
@@ -77,7 +70,7 @@ namespace MyGame
 
             log.Show(); //Отображаем форму для журнала
             log.Location = new Point(form.Location.X + form.Width, form.Location.Y); //Сдвигаем журнал к правому краю игровой формы
-            log.StrLog =DateTime.Now.ToLongTimeString() + " Старт!!!"; //Запишем в Журнал 1ю запись.
+            LogEvent(" Старт!!!"); //Запишем в Журнал 1ю запись.         
 
         }
 
@@ -88,14 +81,8 @@ namespace MyGame
             if (e.KeyCode == Keys.Down) ship.Down();
             if (e.KeyCode == Keys.Escape) //Добавим проверку на нажатие Esc.
             {
-                timer.Stop();
-                if (MessageBox.Show("Close?", "Exit", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    Form f = Application.OpenForms[1]; //переходим к основной форме и закрываем ее
-                    f.Close();
-                }
-                else
-                    timer.Start();
+                Form f = Application.OpenForms[1]; //переходим к основной форме и закрываем ее
+                f.Close();
             }
         }
 
@@ -109,8 +96,9 @@ namespace MyGame
             timer.Stop();
             if (MessageBox.Show("Close?", "Exit", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                Form f1 = Application.OpenForms[0]; //переходим к основной форме и закрываем ее
-                f1.Close();
+                LogEvent(" Выход из игры"); //Запишем в журнал 
+                Form f = Application.OpenForms[0]; //переходим к основной форме и закрываем ее
+                f.Close();
             }
             else
             {
@@ -135,7 +123,10 @@ namespace MyGame
             if (bullet != null) bullet.Draw();
             ship.Draw();
             buffer.Graphics.DrawString("Energy:" + ship.Energy, SystemFonts.DefaultFont, Brushes.White, 0, 0);
+
+            //Отображение счета
             buffer.Graphics.DrawString($"Score: " + ScoreGame, SystemFonts.CaptionFont, Brushes.Red, 0, 10);
+
             buffer.Render();
             //score.Draw();
             //buffer.Render();
@@ -165,12 +156,20 @@ namespace MyGame
                 asteroids[i] = new Asteroid(new Point(r.Next(0, Width), i * 20), new Point(-j, -j), new Size(20, 20));
             }
         }
+
          /// <summary>
          /// Обработка записи в журнал
          /// </summary>
          /// <param name="strEvent"> сообщение, записываемое в журнал</param>
         static public void LogEvent(string strEvent) 
         {
+            
+            using (System.IO.StreamWriter file =
+            new System.IO.StreamWriter("log.txt", true))
+            {
+                file.WriteLine(DateTime.Now.ToLongTimeString() + strEvent);
+            }
+
             log.StrLog = DateTime.Now.ToLongTimeString() + strEvent;
         }             
  
@@ -243,8 +242,7 @@ namespace MyGame
         }
         static public void Finish()
         {
-            timer.Stop();
-            log.StrLog = "Конец";    
+            timer.Stop();                
             buffer.Graphics.DrawString("The End", new Font(FontFamily.GenericSansSerif, 60, FontStyle.Underline),
            Brushes.White, 200, 100);
             buffer.Render();
