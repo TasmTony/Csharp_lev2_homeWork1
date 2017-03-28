@@ -20,9 +20,9 @@ namespace MyGame
         }
         public override void Update()
         {
-            pos.X += 3;
-            if (pos.X > Game.Width)
-                throw new GameObjectException("Снаряд покинул игровое поле((");
+            pos.X += 10;
+            //if (pos.X > Game.Width)
+            //    throw new GameObjectException("Снаряд покинул игровое поле((");
         }
     }
 }

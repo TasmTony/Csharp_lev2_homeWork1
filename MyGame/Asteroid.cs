@@ -14,7 +14,11 @@ namespace MyGame
     class Asteroid:BaseObject,IComparable<Asteroid>
     {
         public int Power { get; set; } = 3;
-      
+        /// <summary>
+        /// Событие запись в журнал о попадании по астероиду
+        /// </summary>
+        public static event LogOut AsterDemagLog;
+
         public Asteroid(Point pos, Point dir, Size size): base(pos,dir,size)
         {
             Power = Game.rnd.Next(1, 4);
@@ -42,6 +46,21 @@ namespace MyGame
                 return -1;
             else
                 return 0;
+        }
+        /// <summary>
+        /// Обработка попадания по астероиду
+        /// </summary>
+        /// <param name="dem"></param>
+        public void Demag(int dem)
+        {
+            if (AsterDemagLog != null) AsterDemagLog($"Попадание по астероиду! Осталось попасть {dem} {((dem>1)?" раза":"раз")}");
+        }
+        /// <summary>
+        /// Обработка уничтожения астероида
+        /// </summary>
+        public void Die()
+        {
+            if (AsterDemagLog != null) AsterDemagLog($"Астероид Уничтожен!");
         }
     }
 }
