@@ -107,6 +107,7 @@ namespace MyGame
             }
             
         }
+
         static public void Draw()
         {
             //buffer.Graphics.Clear(Color.Black);
