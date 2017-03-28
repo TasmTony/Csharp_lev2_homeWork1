@@ -17,6 +17,7 @@ ArgumentOutOfRangeException().
 
 */
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -29,11 +30,12 @@ namespace MyGame
         static public BufferedGraphics buffer;
         static BaseObject[] objs;
         static Bullet bullet;
+        //static List<Bullet> bullets = new List<Bullet>();
         static Asteroid[] asteroids;
         static private Timer timer;
         static Score score;
         static public Random rnd = new Random();
-        static Ship ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(10, 10));
+        static Ship ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(25, 15));
         // Свойства
         // Ширина и высота игрового поля
         static public int Width { get; set; }
@@ -76,6 +78,17 @@ namespace MyGame
             if (e.KeyCode == Keys.ControlKey) bullet = new Bullet(new Point(ship.Rect.X + 10, ship.Rect.Y + 4), new Point(4, 0), new Size(4, 1));
             if (e.KeyCode == Keys.Up) ship.Up();
             if (e.KeyCode == Keys.Down) ship.Down();
+            if (e.KeyCode == Keys.Escape) //Добавим проверку на нажатие Esc.
+            {
+                timer.Stop();
+                if (MessageBox.Show("Close?", "Exit", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    Form f = Application.OpenForms[1]; //переходим к основной форме и закрываем ее
+                    f.Close();
+                }
+                else
+                    timer.Start();
+            }
         }
 
         private static void Timer_Tick(object sender, EventArgs e)

@@ -31,6 +31,7 @@ namespace MyGame
         public override void Draw()
         {
             Game.buffer.Graphics.FillEllipse(Brushes.Wheat, pos.X, pos.Y, size.Width, size.Height);
+            Game.buffer.Graphics.DrawImage(Properties.Resources.ship1, pos.X, pos.Y, size.Width, size.Height);
         }
 
         public override void Update()
@@ -49,7 +50,9 @@ namespace MyGame
 
         public void Die()
         {
-            if (MessageDie != null) MessageDie();
-        }
+            if (MessageDie != null) MessageDie();
+
+        }
+
     }
 }
