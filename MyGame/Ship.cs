@@ -10,7 +10,7 @@ namespace MyGame
     class Ship:BaseObject
     {
         public static event Message MessageDie;
-        public static event LogOut ShipDemag;
+        public static event LogOut ShipDemagLog;
 
         int energy = 100;
 
@@ -50,11 +50,11 @@ namespace MyGame
         }
         public void Demag(int dem)
         {
-            if (ShipDemag != null) ShipDemag($"Урон по кораблю " + dem + "%;");
+            if (ShipDemagLog != null) ShipDemagLog($"Урон по кораблю " + dem + "%;");
         }
         public void Die()
         {
-            if (ShipDemag != null) ShipDemag($"Корабль уничтожен! Game Over!!!");
+            if (ShipDemagLog != null) ShipDemagLog($"Корабль уничтожен! Game Over!!!");
             if (MessageDie != null) MessageDie();
 
         }

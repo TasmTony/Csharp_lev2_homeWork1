@@ -14,7 +14,7 @@ namespace MyGame
     class Asteroid:BaseObject,IComparable<Asteroid>
     {
         public int Power { get; set; } = 3;
-        public static event LogOut AsterDemag;
+        public static event LogOut AsterDemagLog;
 
         public Asteroid(Point pos, Point dir, Size size): base(pos,dir,size)
         {
@@ -47,12 +47,12 @@ namespace MyGame
 
         public void Demag(int dem)
         {
-            if (AsterDemag != null) AsterDemag($"Попадание по астероиду! Осталось попасть " + dem + ((dem>1)?" раза":"раз"));
+            if (AsterDemagLog != null) AsterDemagLog($"Попадание по астероиду! Осталось попасть " + dem + ((dem>1)?" раза":"раз"));
         }
 
         public void Die()
         {
-            if (AsterDemag != null) AsterDemag($"Астероид Уничтожен!");
+            if (AsterDemagLog != null) AsterDemagLog($"Астероид Уничтожен!");
         }
     }
 }

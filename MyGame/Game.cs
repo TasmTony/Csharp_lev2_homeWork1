@@ -36,7 +36,7 @@ namespace MyGame
         static Score score;
         static public Random rnd = new Random();
         static Ship ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(25, 15));
-        static LogForm log = new LogForm();
+        static LogForm log = new LogForm(); //Создадим форму для ведения журнала
         // Свойства
         // Ширина и высота игрового поля
         static public int Width { get; set; }
@@ -65,19 +65,19 @@ namespace MyGame
             buffer = context.Allocate(g, new Rectangle(0, 0, Width, Height));
             string s = $"Урон по кораблю %;";
             Load();
-            form.FormClosed += Form_Closed;
+            form.FormClosing += Form_Closing;
             form.KeyDown += Form_KeyDown;
             timer = new Timer();
             timer.Interval = 100;
             timer.Start();
             timer.Tick += Timer_Tick;
-            Ship.MessageDie += Finish;
-            Ship.ShipDemag += LogEvent;
-            Asteroid.AsterDemag += LogEvent;
-            
-            log.Show();
-            log.Location = new Point(form.Location.X + form.Width, form.Location.Y);
-            log.StrLog = "Старт!!!";
+            Ship.MessageDie += Finish; //Подписываемся на событие уничтожение корабля
+            Ship.ShipDemagLog += LogEvent;//Подписываемся на событие запись в журнал о попадании по кораблю
+            Asteroid.AsterDemagLog += LogEvent;//Подписываемся на событие запись в журнал о попадании по астероиду
+
+            log.Show(); //Отображаем форму для журнала
+            log.Location = new Point(form.Location.X + form.Width, form.Location.Y); //Сдвигаем журнал к правому краю игровой формы
+            log.StrLog =DateTime.Now.ToLongTimeString() + " Старт!!!"; //Запишем в Журнал 1ю запись.
 
         }
 
@@ -104,11 +104,20 @@ namespace MyGame
             Draw();
             Update();
         }
-        private static void Form_Closed(object sender, EventArgs e) //Обработка закрытия формы
+        private static void Form_Closing(object sender, FormClosingEventArgs e) //Обработка закрытия формы
         {
+            timer.Stop();
+            if (MessageBox.Show("Close?", "Exit", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                Form f1 = Application.OpenForms[0]; //переходим к основной форме и закрываем ее
+                f1.Close();
+            }
+            else
+            {
+                e.Cancel = true;
+                timer.Start();
+            }
             
-            Form f = Application.OpenForms[0]; //переходим к основной форме и закрываем ее
-            f.Close();
         }
         static public void Draw()
         {
@@ -140,7 +149,7 @@ namespace MyGame
             Random r = new Random(); //Добавил рандомности первоначальным объектам.
             objs = new BaseObject[30];
 
-            score = new Score(new Point(3, 3)); //инициализируем счетчик очков 
+           // score = new Score(new Point(3, 3)); //инициализируем счетчик очков  
             bullet = new Bullet(new Point(0, r.Next(1, Height)), new Point(5, 0), new Size(4, 1));
             asteroids = new Asteroid[4];
             for (int i = 0; i < objs.Length; i += 2) //Заполняем массив звездами с учетом размеров формы
@@ -156,10 +165,13 @@ namespace MyGame
                 asteroids[i] = new Asteroid(new Point(r.Next(0, Width), i * 20), new Point(-j, -j), new Size(20, 20));
             }
         }
-         
-        static public void LogEvent(string strEvent)
+         /// <summary>
+         /// Обработка записи в журнал
+         /// </summary>
+         /// <param name="strEvent"> сообщение, записываемое в журнал</param>
+        static public void LogEvent(string strEvent) 
         {
-            log.StrLog = DateTime.Now.ToShortTimeString() + strEvent;
+            log.StrLog = DateTime.Now.ToLongTimeString() + strEvent;
         }             
  
         static public void Update()
