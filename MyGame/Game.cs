@@ -158,13 +158,19 @@ namespace MyGame
          /// <param name="strEvent"> сообщение, записываемое в журнал</param>
         static public void LogEvent(string strEvent) 
         {
-            
-            using (System.IO.StreamWriter file =
-            new System.IO.StreamWriter("log.txt", true))
+            try
             {
-                file.WriteLine(DateTime.Now.ToString() + strEvent);
+                using (System.IO.StreamWriter file =
+                new System.IO.StreamWriter("log.txt", true))
+                {
+                    file.WriteLine(DateTime.Now.ToString() + strEvent);
+                }
             }
-
+            catch (Exception ex)
+            {
+                log.StrLog = DateTime.Now.ToLongTimeString() + "Ошибка записи в файл!";
+                log.StrLog = ex.Message;
+            }
             log.StrLog = DateTime.Now.ToLongTimeString() + strEvent;
         }             
  
