@@ -27,6 +27,13 @@ namespace MyGame
             energy -= n;
         }
 
+        public void EnergyUp(int n)
+        {
+
+            energy += n;
+            if (energy > 100) energy = 100;
+        }
+
         public Ship(Point pos,Point dir,Size size):base(pos,dir,size)
         {
 
@@ -34,8 +41,19 @@ namespace MyGame
 
         public override void Draw()
         {
-           // Game.buffer.Graphics.FillEllipse(Brushes.Wheat, pos.X, pos.Y, size.Width, size.Height);
-            Game.buffer.Graphics.DrawImage(Properties.Resources.ship1, pos.X, pos.Y, size.Width, size.Height); //С картинкой интересней))
+            try
+            {
+                // Game.buffer.Graphics.FillEllipse(Brushes.Wheat, pos.X, pos.Y, size.Width, size.Height);
+                Game.buffer.Graphics.DrawImage(Properties.Resources.ship1, pos.X, pos.Y, size.Width, size.Height); //С картинкой интересней))
+            }
+            catch (ArgumentNullException ex)
+            {
+                Game.buffer.Graphics.FillEllipse(Brushes.Wheat, pos.X, pos.Y, size.Width, size.Height); //Если вылетит ошибка, то нарисуем просто кружком
+            }
+            catch (Exception ex)
+            {
+                Game.buffer.Graphics.FillEllipse(Brushes.Wheat, pos.X, pos.Y, size.Width, size.Height);
+            }
         }
 
         public override void Update()
@@ -56,7 +74,17 @@ namespace MyGame
         /// </summary>        
         public void Demag(int dem) 
         {
-            if (ShipDemagLog != null) ShipDemagLog($"Урон по кораблю {dem}%;");
+            this.EnergyLow(dem);
+            if (ShipDemagLog != null) ShipDemagLog($"Урон по кораблю {dem}% остаток HP: {energy}%;");
+        }
+        /// <summary>
+        /// Метод обработки лечения корабля
+        /// </summary>
+        /// <param name="hill"></param>
+        public void Hill(int hill)
+        {
+            this.EnergyUp(hill);
+            if (ShipDemagLog != null) ShipDemagLog($"Восстановление корабля на {hill}% остаток HP: {energy}% ;");
         }
         /// <summary>
         /// Метод обработки уничтожения корабля

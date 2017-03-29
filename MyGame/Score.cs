@@ -6,6 +6,7 @@ namespace MyGame
     /// <summary>
     /// Класс для отображения количества столкновений снаряда и астероида
     /// </summary>
+    /// Удалять пока не буду, мож пригодится...
     class Score:BaseObject
     {
         public Score(Point pos) : base(pos)

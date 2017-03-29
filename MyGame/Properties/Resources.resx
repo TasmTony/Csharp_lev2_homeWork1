@@ -121,6 +121,9 @@
   <data name="astr" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\astr.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="medic" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\medic.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="ship1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ship1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

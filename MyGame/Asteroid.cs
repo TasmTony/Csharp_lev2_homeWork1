@@ -25,7 +25,7 @@ namespace MyGame
         }
         public override void Draw()
         {
-            Game.buffer.Graphics.DrawImage(Properties.Resources.astr1, pos.X, pos.Y, size.Width, size.Height); //Астероид будет картинкой занесенной в ресурсы
+            Game.buffer.Graphics.DrawImage(Properties.Resources.astr, pos.X, pos.Y, size.Width, size.Height); //Астероид будет картинкой занесенной в ресурсы
         }
 
         public override void Update()
@@ -59,7 +59,7 @@ namespace MyGame
         /// Обработка уничтожения астероида
         /// </summary>
         public void Die()
-        {
+        {            
             if (AsterDemagLog != null) AsterDemagLog($"Астероид Уничтожен!");
         }
     }

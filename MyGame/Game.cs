@@ -23,10 +23,10 @@ namespace MyGame
         static public BufferedGraphics buffer;
         static BaseObject[] objs;
         static Bullet bullet;
+        static Medical med;
         //static List<Bullet> bullets = new List<Bullet>();
         static Asteroid[] asteroids;
-        static private Timer timer;
-        //static Score score;
+        static private Timer timer;       
         static public Random rnd = new Random();
         static Ship ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(25, 15));
         static LogForm log = new LogForm(); //Создадим форму для ведения журнала
@@ -96,7 +96,7 @@ namespace MyGame
             timer.Stop();
             if (MessageBox.Show("Close?", "Exit", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                LogEvent(" Выход из игры"); //Запишем в журнал 
+                LogEvent(" Выход из игры. Конечный счет: "+ScoreGame); //Запишем в журнал 
                 Form f = Application.OpenForms[0]; //переходим к основной форме и закрываем ее
                 f.Close();
             }
@@ -110,12 +110,6 @@ namespace MyGame
 
         static public void Draw()
         {
-            //buffer.Graphics.Clear(Color.Black);
-            //bullet.Draw();
-            //foreach (BaseObject obj in objs)
-            //    obj.Draw();
-            //foreach (Asteroid obj in asteroids)
-            //    obj.Draw();
             buffer.Graphics.Clear(Color.Black);
             foreach (BaseObject obj in objs)
                 obj.Draw();
@@ -123,15 +117,14 @@ namespace MyGame
                 if (a != null) a.Draw();
             if (bullet != null) bullet.Draw();
             ship.Draw();
+            med.Draw();
             buffer.Graphics.DrawString("Energy:" + ship.Energy, SystemFonts.DefaultFont, Brushes.White, 0, 0);
 
             //Отображение счета
             buffer.Graphics.DrawString($"Score: " + ScoreGame, SystemFonts.CaptionFont, Brushes.Red, 0, 10);
 
             buffer.Render();
-            //score.Draw();
-            //buffer.Render();
-            //ship.Draw();
+
 
 
         }
@@ -141,8 +134,9 @@ namespace MyGame
             Random r = new Random(); //Добавил рандомности первоначальным объектам.
             objs = new BaseObject[30];
 
-           // score = new Score(new Point(3, 3)); //инициализируем счетчик очков  
-            bullet = new Bullet(new Point(0, r.Next(1, Height)), new Point(5, 0), new Size(4, 1));
+            // score = new Score(new Point(3, 3)); //инициализируем счетчик очков  
+            // bullet = new Bullet(new Point(0, r.Next(1, Height)), new Point(5, 0), new Size(4, 1));
+            med = new Medical(new Point(r.Next(0, Width), r.Next(1, Height)), new Point(r.Next(-10, 1), r.Next(-15, 5)), new Size(20, 20));
             asteroids = new Asteroid[4];
             for (int i = 0; i < objs.Length; i += 2) //Заполняем массив звездами с учетом размеров формы
             {
@@ -168,7 +162,7 @@ namespace MyGame
             using (System.IO.StreamWriter file =
             new System.IO.StreamWriter("log.txt", true))
             {
-                file.WriteLine(DateTime.Now.ToLongTimeString() + strEvent);
+                file.WriteLine(DateTime.Now.ToString() + strEvent);
             }
 
             log.StrLog = DateTime.Now.ToLongTimeString() + strEvent;
@@ -180,6 +174,14 @@ namespace MyGame
             foreach (BaseObject obj in objs)
                 obj.Update();
             if (bullet != null) bullet.Update();
+            if (med != null) med.Update();
+            //Если поймаем аптечку и энергия корабля меньше 100%, то полечим корабль и создадим новую аптечку
+            if (ship.Collision(med)&&ship.Energy<100)
+            {
+                int hill = rnd.Next(1, 10);
+                ship.Hill(hill);
+                med = new Medical(new Point(rnd.Next(0, Width), rnd.Next(1, Height)), new Point(rnd.Next(-10, 1), rnd.Next(-15, 5)), new Size(20, 20));
+            }
             for (int i = 0; i < asteroids.Length; i++)
             {
                 if (asteroids[i] != null)
@@ -188,7 +190,7 @@ namespace MyGame
                     if (bullet != null && bullet.Collision(asteroids[i]))
                     {
                         System.Media.SystemSounds.Hand.Play();
-
+                        //Если мощность астероида после попадания равна 0, то уничтожим его и добавим очко
                         if (--asteroids[i].Power == 0)
                         {
                             asteroids[i].Die();
@@ -196,15 +198,14 @@ namespace MyGame
                             ScoreGame++;
                         }
                         else
-                            asteroids[i].Demag(asteroids[i].Power);
+                            asteroids[i].Demag(asteroids[i].Power); //иначе только занесем запись в журнал.
                                                 
                         bullet = null;
                         continue;
                     }
                     if (ship.Collision(asteroids[i]))
                     {
-                        int d = rnd.Next(1, 10);
-                        ship.EnergyLow(d);
+                        int d = rnd.Next(1, 10);                        
                         ship.Demag(d);
                         System.Media.SystemSounds.Asterisk.Play();
                         if (ship.Energy <= 0) ship.Die();
