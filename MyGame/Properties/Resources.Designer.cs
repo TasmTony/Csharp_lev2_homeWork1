@@ -61,20 +61,11 @@ namespace MyGame.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на .
-        /// </summary>
-        public static string astr {
-            get {
-                return ResourceManager.GetString("astr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap astr1 {
+        public static System.Drawing.Bitmap astr {
             get {
-                object obj = ResourceManager.GetObject("astr1", resourceCulture);
+                object obj = ResourceManager.GetObject("astr", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
