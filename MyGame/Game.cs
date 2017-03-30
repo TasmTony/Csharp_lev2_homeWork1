@@ -24,7 +24,7 @@ namespace MyGame
         static BaseObject[] objs;
         static Bullet bullet;
         static Medical med;
-        //static List<Bullet> bullets = new List<Bullet>();
+        static List<Bullet> bullets = new List<Bullet>();
         static Asteroid[] asteroids;
         static private Timer timer;       
         static public Random rnd = new Random();
@@ -76,7 +76,7 @@ namespace MyGame
 
         private static void Form_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.ControlKey) bullet = new Bullet(new Point(ship.Rect.X + 10, ship.Rect.Y + 4), new Point(4, 0), new Size(4, 1));
+            if (e.KeyCode == Keys.ControlKey) bullets.Add(new Bullet(new Point(ship.Rect.X + 10, ship.Rect.Y + 4), new Point(4, 0), new Size(4, 1)));
             if (e.KeyCode == Keys.Up) ship.Up();
             if (e.KeyCode == Keys.Down) ship.Down();
             if (e.KeyCode == Keys.Escape) //Добавим проверку на нажатие Esc.
@@ -115,7 +115,7 @@ namespace MyGame
                 obj.Draw();
             foreach (Asteroid a in asteroids)
                 if (a != null) a.Draw();
-            if (bullet != null) bullet.Draw();
+            foreach (Bullet b in bullets) b.Draw();
             ship.Draw();
             med.Draw();
             buffer.Graphics.DrawString("Energy:" + ship.Energy, SystemFonts.DefaultFont, Brushes.White, 0, 0);
@@ -179,7 +179,7 @@ namespace MyGame
             
             foreach (BaseObject obj in objs)
                 obj.Update();
-            if (bullet != null) bullet.Update();
+            foreach (Bullet b in bullets) b.Update();
             if (med != null) med.Update();
             //Если поймаем аптечку и энергия корабля меньше 100%, то полечим корабль и создадим новую аптечку
             if (ship.Collision(med)&&ship.Energy<100)
@@ -193,7 +193,8 @@ namespace MyGame
                 if (asteroids[i] != null)
                 {
                     asteroids[i].Update();
-                    if (bullet != null && bullet.Collision(asteroids[i]))
+                    foreach (Bullet b in bullets)
+                    if (asteroids[i] != null && b.Collision(asteroids[i]))
                     {
                         System.Media.SystemSounds.Hand.Play();
                         //Если мощность астероида после попадания равна 0, то уничтожим его и добавим очко
@@ -205,8 +206,7 @@ namespace MyGame
                         }
                         else
                             asteroids[i].Demag(asteroids[i].Power); //иначе только занесем запись в журнал.
-                                                
-                        bullet = null;
+                        bullets.Remove(b);
                         continue;
                     }
                     if (ship.Collision(asteroids[i]))
