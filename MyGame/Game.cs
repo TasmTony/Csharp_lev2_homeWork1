@@ -19,7 +19,7 @@ namespace MyGame
 {
     class Game
     {
-        static System.Drawing.BufferedGraphicsContext context;
+        static BufferedGraphicsContext context;
         static public BufferedGraphics buffer;
         static BaseObject[] objs;
         static Bullet bullet;
@@ -193,8 +193,8 @@ namespace MyGame
                 if (asteroids[i] != null)
                 {
                     asteroids[i].Update();
-                    foreach (Bullet b in bullets)
-                    if (asteroids[i] != null && b.Collision(asteroids[i]))
+                    for (int j=0; j<bullets.Count; j++)
+                    if (asteroids[i] != null && bullets[j].Collision(asteroids[i]))
                     {
                         System.Media.SystemSounds.Hand.Play();
                         //Если мощность астероида после попадания равна 0, то уничтожим его и добавим очко
@@ -206,10 +206,11 @@ namespace MyGame
                         }
                         else
                             asteroids[i].Demag(asteroids[i].Power); //иначе только занесем запись в журнал.
-                        bullets.Remove(b);
+                        bullets.RemoveAt(j);
+                        j--;
                         continue;
                     }
-                    if (ship.Collision(asteroids[i]))
+                    if (asteroids[i] != null && ship.Collision(asteroids[i]))
                     {
                         int d = rnd.Next(1, 10);                        
                         ship.Demag(d);
