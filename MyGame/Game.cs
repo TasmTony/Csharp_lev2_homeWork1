@@ -25,7 +25,8 @@ namespace MyGame
         static Bullet bullet;
         static Medical med;
         static List<Bullet> bullets = new List<Bullet>();
-        static Asteroid[] asteroids;
+        static int Level = 1;
+        static List<Asteroid> asteroids = new List<Asteroid>();
         static private Timer timer;       
         static public Random rnd = new Random();
         static Ship ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(25, 15));
@@ -111,59 +112,58 @@ namespace MyGame
         static public void Draw()
         {
             buffer.Graphics.Clear(Color.Black);
-            foreach (BaseObject obj in objs)
-                obj.Draw();
-            foreach (Asteroid a in asteroids)
-                if (a != null) a.Draw();
+            foreach (BaseObject obj in objs)  obj.Draw();
+            foreach (Asteroid a in asteroids) a.Draw();
             foreach (Bullet b in bullets) b.Draw();
             ship.Draw();
             med.Draw();
+            buffer.Graphics.DrawString($"LEVEL: " + Level, new Font(FontFamily.GenericSansSerif, 10), Brushes.Red, Width-100, 0);
             buffer.Graphics.DrawString("Energy:" + ship.Energy, SystemFonts.DefaultFont, Brushes.White, 0, 0);
-
             //Отображение счета
             buffer.Graphics.DrawString($"Score: " + ScoreGame, SystemFonts.CaptionFont, Brushes.Red, 0, 10);
-
             buffer.Render();
-
-
-
         }
 
         static public void Load()
-        {
-            Random r = new Random(); //Добавил рандомности первоначальным объектам.
+        {            
             objs = new BaseObject[30];
-
-            // score = new Score(new Point(3, 3)); //инициализируем счетчик очков  
-            // bullet = new Bullet(new Point(0, r.Next(1, Height)), new Point(5, 0), new Size(4, 1));
-            med = new Medical(new Point(r.Next(0, Width), r.Next(1, Height)), new Point(r.Next(-10, 1), r.Next(-15, 5)), new Size(20, 20));
-            asteroids = new Asteroid[4];
-            for (int i = 0; i < objs.Length; i += 2) //Заполняем массив звездами с учетом размеров формы
+            med = new Medical(new Point(rnd.Next(0, Width), rnd.Next(1, Height)), new Point(rnd.Next(-10, 1), rnd.Next(-15, 5)), new Size(20, 20));
+            //Заполняем массив звездами с учетом размеров формы
+            for (int i = 0; i < objs.Length; i += 2) 
             {
-                int j = r.Next(1, 30);
-                objs[i] = new Star(new Point(r.Next(1, Width), i * Height / 30), new Point(-j, 0), new Size(3, 3));
-                j = r.Next(1, 30);
-                objs[i + 1] = new DrString(new Point(r.Next(1, Width), (i + 1) * Height / 30), new Point(-j, -j));
+                int j = rnd.Next(1, 30);
+                objs[i] = new Star(new Point(rnd.Next(1, Width), i * Height / 30), new Point(-j, 0), new Size(3, 3));
+                j = rnd.Next(1, 30);
+                objs[i + 1] = new DrString(new Point(rnd.Next(1, Width), (i + 1) * Height / 30), new Point(-j, -j));
             }
-            for (int i = 0; i < asteroids.Length; i++)  //Заполняем массив астероидов с учетом размеров формы
+            //Заполняем коллекцию астероидов новыми объектами
+            NewAsteroids();
+            
+        }
+        /// <summary>
+        /// Метод заполнения коллекции новыми астероидами
+        /// </summary>
+        static public void NewAsteroids()
+        {
+            for (int i = 0; i < Level + 3; i++)  //Заполняем массив астероидов с учетом размеров формы
             {
-                int j = r.Next(1, 15);
-                asteroids[i] = new Asteroid(new Point(r.Next(0, Width), i * 20), new Point(-j, -j), new Size(20, 20));
+                int j = rnd.Next(1, 15);
+                asteroids.Add(new Asteroid(new Point(rnd.Next(0, Width), i * 20), new Point(-j, -j), new Size(20, 20)));
             }
         }
-
          /// <summary>
          /// Обработка записи в журнал
          /// </summary>
          /// <param name="strEvent"> сообщение, записываемое в журнал</param>
         static public void LogEvent(string strEvent) 
         {
+            //Запись в файл
             try
             {
                 using (System.IO.StreamWriter file =
                 new System.IO.StreamWriter("log.txt", true))
                 {
-                    file.WriteLine(DateTime.Now.ToString() + strEvent);
+                    file.WriteLine(DateTime.Now.ToString() + strEvent); 
                 }
             }
             catch (Exception ex)
@@ -171,14 +171,14 @@ namespace MyGame
                 log.StrLog = DateTime.Now.ToLongTimeString() + "Ошибка записи в файл!";
                 log.StrLog = ex.Message;
             }
+            //вывод в форму журнала
             log.StrLog = DateTime.Now.ToLongTimeString() + strEvent;
         }             
  
         static public void Update()
         {
             
-            foreach (BaseObject obj in objs)
-                obj.Update();
+            foreach (BaseObject obj in objs) obj.Update();
             foreach (Bullet b in bullets) b.Update();
             if (med != null) med.Update();
             //Если поймаем аптечку и энергия корабля меньше 100%, то полечим корабль и создадим новую аптечку
@@ -188,29 +188,34 @@ namespace MyGame
                 ship.Hill(hill);
                 med = new Medical(new Point(rnd.Next(0, Width), rnd.Next(1, Height)), new Point(rnd.Next(-10, 1), rnd.Next(-15, 5)), new Size(20, 20));
             }
-            for (int i = 0; i < asteroids.Length; i++)
+            for (int i = 0; i < asteroids.Count; i++)
             {
-                if (asteroids[i] != null)
-                {
                     asteroids[i].Update();
                     for (int j=0; j<bullets.Count; j++)
-                    if (asteroids[i] != null && bullets[j].Collision(asteroids[i]))
+                    if (i>=0 && bullets[j].Collision(asteroids[i]))
                     {
                         System.Media.SystemSounds.Hand.Play();
+                        bullets.RemoveAt(j);
+                        j--;
                         //Если мощность астероида после попадания равна 0, то уничтожим его и добавим очко
                         if (--asteroids[i].Power == 0)
                         {
                             asteroids[i].Die();
-                            asteroids[i] = null;
+                            asteroids.RemoveAt(i); //Удаляем объект из коллекции
+                            i--;
                             ScoreGame++;
+                            if (asteroids.Count==0)
+                            {
+                                Level++;
+                                NewAsteroids();
+                                //i = 0;
+                                //j = -1;
+                            }
                         }
                         else
-                            asteroids[i].Demag(asteroids[i].Power); //иначе только занесем запись в журнал.
-                        bullets.RemoveAt(j);
-                        j--;
-                        continue;
+                            asteroids[i].Demag(asteroids[i].Power); //иначе только занесем запись в журнал.                                                
                     }
-                    if (asteroids[i] != null && ship.Collision(asteroids[i]))
+                    if ( i>=0 && ship.Collision(asteroids[i]))
                     {
                         int d = rnd.Next(1, 10);                        
                         ship.Demag(d);
@@ -218,36 +223,7 @@ namespace MyGame
                         if (ship.Energy <= 0) ship.Die();
                     }
                 }
-            }
-        
-        //int i = 0;
-        //foreach (Asteroid obj in asteroids) //Пробегаем по астероидам и проверяем их на столкновение со снарядом
-        //{
-        //    obj.Update();
-        //    if (obj.Collision(bullet))
-        //    {
-        //        ScoreGame++; //увеличим счетчик очков
-        //        Random r = new Random();
-        //        System.Media.SystemSounds.Hand.Play(); //Воспроизводим звук при столкновении
-        //        int j = r.Next(1, 30);
-        //        asteroids[i]=new Asteroid(new Point(r.Next(0, Width), r.Next(1,Height)), new Point(-j, -j), new Size(20, 20)); //генерируем новый астероид
-        //        bullet = new Bullet(new Point(0, r.Next(1,Width)), new Point(5, 0), new Size(4, 1)); //генерируем новый снаряд
-        //    }
-        //    i++;
-
-        //}
-        //try
-        //{
-        //    bullet.Update();
-        //}
-        //catch(GameObjectException ex) //Если снаряд улетит за пределы поля, сгенерируется исключение
-        //{
-        //    timer.Stop(); //Остановим таймер
-        //    MessageBox.Show(ex.Message,"Pause!!!"); //Выдадим сообщение об исключении
-        //    Random r = new Random();
-        //    bullet = new Bullet(new Point(0, r.Next(1, Width)), new Point(5, 0), new Size(4, 1)); //генерируем новый снаряд
-        //    timer.Start(); //Продолжаем игру
-        //} 
+            
         }
         static public void Finish()
         {
