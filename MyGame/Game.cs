@@ -21,8 +21,7 @@ namespace MyGame
     {
         static BufferedGraphicsContext context;
         static public BufferedGraphics buffer;
-        static BaseObject[] objs;
-        static Bullet bullet;
+        static BaseObject[] objs;    
         static Medical med;
         static List<Bullet> bullets = new List<Bullet>();
         static int Level = 1;
@@ -57,22 +56,35 @@ namespace MyGame
             // Связываем буфер в памяти с графическим объектом.
             // для того, чтобы рисовать в буфере
             buffer = context.Allocate(g, new Rectangle(0, 0, Width, Height));
-            string s = $"Урон по кораблю %;";
+            
             Load();
+
             form.FormClosing += Form_Closing;
             form.KeyDown += Form_KeyDown;
+
             timer = new Timer();
             timer.Interval = 100;
             timer.Start();
             timer.Tick += Timer_Tick;
+
             Ship.MessageDie += Finish; //Подписываемся на событие уничтожение корабля
             Ship.ShipDemagLog += LogEvent;//Подписываемся на событие запись в журнал о попадании по кораблю
             Asteroid.AsterDemagLog += LogEvent;//Подписываемся на событие запись в журнал о попадании по астероиду
+            Bullet.DieBullet += DieBullet;//Подписываемся на событие - вылет снаряда за пределы поля
 
             log.Show(); //Отображаем форму для журнала
             log.Location = new Point(form.Location.X + form.Width, form.Location.Y); //Сдвигаем журнал к правому краю игровой формы
             LogEvent(" Старт!!!"); //Запишем в Журнал 1ю запись.         
 
+        }
+
+        /// <summary>
+        /// Метод удаления объекта снаряда из коллекции
+        /// </summary>
+        /// <param name="obj"></param>
+        private static void DieBullet(Bullet obj)
+        {
+            bullets.Remove(obj);
         }
 
         private static void Form_KeyDown(object sender, KeyEventArgs e)
@@ -147,8 +159,8 @@ namespace MyGame
         {
             for (int i = 0; i < Level + 3; i++)  //Заполняем массив астероидов с учетом размеров формы
             {
-                int j = rnd.Next(1, 15);
-                asteroids.Add(new Asteroid(new Point(rnd.Next(0, Width), i * 20), new Point(-j, -j), new Size(20, 20)));
+                int j = rnd.Next(-15, 15);
+                asteroids.Add(new Asteroid(new Point(rnd.Next(0, Width), rnd.Next(0, Height)), new Point(-j, -j), new Size(20, 20)));
             }
         }
          /// <summary>
@@ -179,7 +191,12 @@ namespace MyGame
         {
             
             foreach (BaseObject obj in objs) obj.Update();
-            foreach (Bullet b in bullets) b.Update();
+            //  foreach (Bullet b in bullets) b.Update();
+            for (int i = 0; i < bullets.Count; i++) //Чтобы не забивать память, реализовал уничтожение улетевших за игровое поле снарядов
+            {
+                bullets[i].Update();
+                if (bullets[i].Die()) i--;   //Если снаряд уничтожен, то сдвинем индекс назад на еденицу.
+            }
             if (med != null) med.Update();
             //Если поймаем аптечку и энергия корабля меньше 100%, то полечим корабль и создадим новую аптечку
             if (ship.Collision(med)&&ship.Energy<100)
@@ -206,10 +223,9 @@ namespace MyGame
                             ScoreGame++;
                             if (asteroids.Count==0)
                             {
-                                Level++;
-                                NewAsteroids();
-                                //i = 0;
-                                //j = -1;
+                                Level++; //Увеличиваем уровень
+                                LogEvent($"Уровень {Level}");//Сообщение в журнал
+                                NewAsteroids(); //Заполняем коллекцию новыми объектами астероидов
                             }
                         }
                         else
